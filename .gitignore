@@ -1,0 +1,15 @@
+*.o
+*.out
+*.exe
+sum_static
+sum_dynamic
+histogram
+monte_carlo_pi
+pthreads_histogram
+pthreads_monte_carlo_pi
+openmp_histogram
+openmp_monte_carlo_pi
+.DS_Store
+Thumbs.db
+.vscode/
+*.swp
