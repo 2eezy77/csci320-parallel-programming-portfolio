@@ -1,64 +1,57 @@
-# Week 6 Programming Assignments (MPI)
+# Week 6: Histogram and Monte Carlo π (MPI)
 
-Two small MPI programs for Chapter 3 assignments:
+Jose I. Montero — CSCI 320 Parallel & Distributed Programming
 
-- `histogram`: reads a list of numbers on rank 0, distributes them, and prints the histogram on rank 0.
-- `monte_carlo_pi`: estimates π with a Monte Carlo dart toss and reduces the results to rank 0.
+## Contents
+
+- `histogram.c` — MPI scatter/reduce histogram
+- `monte_carlo_pi.c` — MPI Monte Carlo π estimator
+- `Makefile` — builds with `mpicc`
+- `sample_data.txt` — tiny test input for the histogram
 
 ## Build
 
 ```bash
-cd Week\ 6/Assignments/Montero_MPI_Histogram_and_MonteCarloPi
 make
 ```
 
-## histogram
-
-Implements the Section 2.7.1 histogram example. Rank 0 reads all values, scatters work, every rank counts locally, and rank 0 prints the combined counts.
-
-Usage:
-
-```bash
-mpirun -np 4 ./histogram <num_bins> <min_val> <max_val> <data_file>
-```
-
-Example:
+## Run examples
 
 ```bash
 mpirun -np 4 ./histogram 5 0.0 10.0 sample_data.txt
-```
-
-Notes:
-
-- Inputs outside `[min_val, max_val]` are ignored.
-- Values equal to `max_val` are placed in the last bin.
-
-## monte_carlo_pi
-
-Implements the Monte Carlo dartboard estimate of π from the assignment. Rank 0 reads the total tosses, broadcasts to everyone, each rank tosses independently, and rank 0 prints the global π estimate.
-
-Usage:
-
-```bash
-mpirun -np 4 ./monte_carlo_pi <num_tosses> [seed]
-```
-
-Examples:
-
-```bash
 mpirun -np 4 ./monte_carlo_pi 1000000
-mpirun -np 8 ./monte_carlo_pi 5000000 12345
+mpirun -np 8 ./monte_carlo_pi 5000000 12345   # with seed
 ```
 
-### Output
+## Notes (histogram)
 
-Rank 0 prints the total tosses, total points inside the unit circle, and the π estimate:
+- Rank 0 reads all doubles from the data file, then scatters them across ranks.
+- Each rank ignores values outside `[min_val, max_val]`; values equal to `max_val` go in the last bin.
+- Rank 0 reduces and prints the global bin counts with bin edges.
 
+## Notes (Monte Carlo π)
+
+- Rank 0 broadcasts total tosses (and optional seed); each rank tosses locally.
+- Uses `long long` for toss and hit counts; `MPI_Reduce` sums hits to rank 0.
+- π estimate = `4 * (global hits) / (total tosses)`.
+- Uses `srand` / `rand` for portability.
+
+## Sample output
+
+```text
+mpirun -np 4 ./histogram 5 0.0 10.0 sample_data.txt
+Histogram (bin edges [0, 10], 5 bins):
+[0, 2) : 3
+[2, 4) : 4
+[4, 6) : 4
+[6, 8) : 4
+[8, 10)] : 5
+
+mpirun -np 4 ./monte_carlo_pi 5000000 12345
+total_tosses=5000000  total_in_circle=3926648  pi_estimate=3.14131840
 ```
-total_tosses=1000000  total_in_circle=785398  pi_estimate=3.141592
-```
 
-## Cleaning up
+## Clean
 
 ```bash
 make clean
