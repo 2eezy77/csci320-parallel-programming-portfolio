@@ -6,6 +6,22 @@ C implementations of the same core problems across three parallel models: **MPI*
 
 **Author:** Jose I. Montero
 
+```text
+                    +------------------+
+                    | Shared problems  |
+                    | sum / histogram  |
+                    | / Monte Carlo pi |
+                    +--------+---------+
+                             |
+         +-------------------+-------------------+
+         |                   |                   |
+         v                   v                   v
+   +-----------+      +------------+      +-----------+
+   |    MPI    |      |  Pthreads  |      |  OpenMP   |
+   | processes |      |   threads  |      | pragmas   |
+   +-----------+      +------------+      +-----------+
+```
+
 ## Projects
 
 | Folder | Model | What it shows |

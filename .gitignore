@@ -12,4 +12,6 @@ openmp_monte_carlo_pi
 .DS_Store
 Thumbs.db
 .vscode/
+.idea/
+.cursor/
 *.swp
